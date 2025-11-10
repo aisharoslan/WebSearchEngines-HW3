@@ -11,9 +11,6 @@ Files:
 * parsing.cpp
     - input: parses 1M subset corpus in subset_passages.tsv
     - output: 16 sorted temp files, page table with doc lengths for each passage id
-    - modifications from HW2
-        - use 1M subset instead of 8.8M
-        - 16 temp files instead of 256 temp files
 * merging.cpp
     - input: 16 sorted temp files
     - output: 1 final sorted, merged postings file
