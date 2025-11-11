@@ -307,6 +307,7 @@ int main()
     cout << "Processing qrels.dev.tsv" << endl;
     ofstream ofsTop100(devTrecTop100Filename);
     ofstream ofsTop1000(devTrecTop1000Filename);
+
     while (getline(devIfs, line))
     {
         stringstream ss(line);
@@ -314,6 +315,7 @@ int main()
         uniqueQueries.insert(queryId);
     }
 
+    auto startDev = chrono::high_resolution_clock::now();
     for (uint32_t queryId : uniqueQueries)
     {
         query = devQueryMap[queryId];
@@ -341,6 +343,11 @@ int main()
         writeTrecResults(ofsTop1000, entry.first, entry.second, 1000);
     }
 
+    auto endDev = chrono::high_resolution_clock::now();
+    double elapsedDev = chrono::duration<double>(endDev - startDev).count();
+    cout << "✅ Finished writing dev TREC files in " << fixed << setprecision(2)
+         << elapsedDev << " seconds.\n";
+
     buffer.clear();
     uniqueQueries.clear();
     ofsTop100.close();
@@ -351,12 +358,15 @@ int main()
     ofsTop100.open(evalOneTrecTop100Filename);
     ofsTop1000.open(evalOneTrecTop1000Filename);
     cout << "Processing " << evalOneQueries << " " << endl;
+
     while (getline(evalOneIfs, line))
     {
         stringstream ss(line);
         ss >> queryId >> ignore >> passageId >> relevance;
         uniqueQueries.insert(queryId);
     }
+
+    auto startEvalOne = chrono::high_resolution_clock::now();
 
     for (uint32_t queryId : uniqueQueries)
     {
@@ -370,6 +380,11 @@ int main()
         writeTrecResults(ofsTop100, entry.first, entry.second, 100);
         writeTrecResults(ofsTop1000, entry.first, entry.second, 1000);
     }
+
+    auto endEvalOne = chrono::high_resolution_clock::now();
+    double elapsedEvalOne = chrono::duration<double>(endEvalOne - startEvalOne).count();
+    cout << "✅ Finished writing eval.one TREC files in " << fixed << setprecision(2)
+         << elapsedEvalOne << " seconds.\n";
 
     buffer.clear();
     uniqueQueries.clear();
@@ -381,12 +396,15 @@ int main()
     ofsTop100.open(evalTwoTrecTop100Filename);
     ofsTop1000.open(evalTwoTrecTop1000Filename);
     cout << "Processing " << evalTwoQueries << " " << endl;
+
     while (getline(evalTwoIfs, line))
     {
         stringstream ss(line);
         ss >> queryId >> ignore >> passageId >> relevance;
         uniqueQueries.insert(queryId);
     }
+
+    auto startEvalTwo = chrono::high_resolution_clock::now();
 
     for (uint32_t queryId : uniqueQueries)
     {
@@ -400,6 +418,11 @@ int main()
         writeTrecResults(ofsTop100, entry.first, entry.second, 100);
         writeTrecResults(ofsTop1000, entry.first, entry.second, 1000);
     }
+
+    auto endEvalTwo = chrono::high_resolution_clock::now();
+    double elapsedEvalTwo = chrono::duration<double>(endEvalTwo - startEvalTwo).count();
+    cout << "✅ Finished writing eval.two TREC files in " << fixed << setprecision(2)
+         << elapsedEvalTwo << " seconds.\n";
 
     buffer.clear();
     uniqueQueries.clear();

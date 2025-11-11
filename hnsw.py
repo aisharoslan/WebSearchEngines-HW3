@@ -1,12 +1,13 @@
 import h5py
 import faiss # efficient similarity search/clustering of dense vectors
 import numpy as np
+import time
 from collections import defaultdict
 
 DIM = 384 # Embedding dimensions
-M = 4 # max no. of neighbors per node in graph
-EF_CONSTRUCTION = 50
-EF_SEARCH = 50
+M = 8 # max no. of neighbors per node in graph
+EF_CONSTRUCTION = 200
+EF_SEARCH = 200
 TOPK_HNSW = 100
 
 def load_h5_embeddings(file_path, id_key='id', embedding_key='embedding'):
@@ -37,6 +38,9 @@ def hnsw(passage_ids, passage_embeddings, query_embeddings):
     - top_passage_ids_per_query: list of top-K passage IDs for each query
     - scores_per_query: list of corresponding similarity scores
     """
+    print("\nBuilding and searching HNSW index...")
+    start = time.time()
+
     # IndexHNSW flat - graph based ANN search
     # HNSW - best ANN for semantic retrieval
     # Supports inner product/cosine, high recall, good runtime
@@ -70,6 +74,9 @@ def hnsw(passage_ids, passage_embeddings, query_embeddings):
 
     top_passage_ids_per_query = [list(row) for row in top_passage_ids]
     scores_per_query = [list(row) for row in dot_product_scores]
+
+    elapsed = time.time() - start
+    print(f"HNSW search completed in {elapsed:.2f} seconds total.")
 
     return top_passage_ids_per_query, scores_per_query
 
@@ -133,10 +140,13 @@ def main():
         run_dict[query_id] = pairs
     
     qrels_files = ["qrels.dev.tsv", "qrels.eval.one.tsv", "qrels.eval.two.tsv"]
-    trec_files = ["hnsw.low.dev.trec", "hnsw.low.eval.one.trec", "hnsw.low.eval.two.trec"]
+    trec_files = ["hnsw.dev.trec", "hnsw.eval.one.trec", "hnsw.eval.two.trec"]
 
     for i in range(len(qrels_files)):
+        start = time.time()
         process_queries(qrels_files[i], trec_files[i], run_dict)
+        elapsed = time.time() - start
+        print(f"Finished processing {qrels_files[i]} in {elapsed:.2f} seconds.")
 
 
 if __name__ == "__main__":

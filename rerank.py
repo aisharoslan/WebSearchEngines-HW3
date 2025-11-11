@@ -1,5 +1,6 @@
 import h5py
 import numpy as np
+import time
 from collections import defaultdict
 
 
@@ -113,7 +114,14 @@ def main():
     for i in range(len(bm25_run_files)):
         run_file = bm25_run_files[i]
         trec_file = trec_files[i]
+        
+        start = time.time()
+        
         process_bm25_and_rerank(run_file, trec_file, query_ids, query_embeddings, passage_id_to_index, passage_embeddings)
+        
+        elapsed = time.time() - start
+        print(f"Reranked queries in {elapsed:.2f}s")
+
 
 if __name__ == "__main__":
     main()

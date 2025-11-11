@@ -1,4 +1,5 @@
 from collections import defaultdict
+import time
 
 K = 100
 RRF_K = 60 # constant added to ranks in RRF formula
@@ -70,7 +71,10 @@ def main():
     trec_files = ["fusion.dev.trec", "fusion.eval.one.trec", "fusion.eval.two.trec"]
 
     for i in range(len(bm25_files)):
+        start = time.time()
         rrf_fusion(bm25_files[i], hnsw_files[i], trec_files[i])
+        elapsed = time.time() - start
+        print(f"Fused queries in {elapsed:.2f}s")
 
 
 if __name__ == "__main__":
